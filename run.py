@@ -9,9 +9,9 @@ client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
 df = pd.read_csv("datasets/Financial-QA-10k.csv")[["question", "answer"]]
 df = df.dropna().reset_index(drop=True)
 # limit to first 25 rows for testing
-df = df.head(5)
+df = df.head(100)
 
-def ask_model(question, model="gpt-5", temperature=0.2):
+def ask_model(question, model="gpt-5", temperature=0):
     """Ask one question → return raw string answer."""
 
     # create simple prompt asking for direct answer
