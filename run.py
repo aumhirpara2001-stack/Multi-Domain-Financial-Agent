@@ -9,26 +9,27 @@ client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
 df = pd.read_csv("datasets/Financial-QA-10k.csv")[["question", "answer"]]
 df = df.dropna().reset_index(drop=True)
 # limit to first 25 rows for testing
-df = df.head(25)
+df = df.head(5)
 
-def ask_model(question, model="gpt-4o-mini", temperature=0.2):
+def ask_model(question, model="gpt-5", temperature=0.2):
     """Ask one question → return raw string answer."""
 
     # create simple prompt asking for direct answer
     prompt = f"Answer the question. Return only the final answer.\n\nQuestion: {question}"
     try:
         # call openai api to get model response
-        resp = client.chat.completions.create(
-            model=model,
-            messages=[{"role": "user", "content": prompt}],
-            temperature=temperature,
+        resp = client.responses.create(
+            model="gpt-5",
+            input=prompt,
+            reasoning={"effort": "low"},
+            text={"verbosity": "low"},
         )
-        return resp.choices[0].message.content.strip()
+        return resp.output_text.strip()
     except Exception as e:
         print("Error:", e)
         return None
 
-def judge_answer(question, gold, pred, model="gpt-4o", temperature=0):
+def judge_answer(question, gold, pred, model="gpt-5", temperature=0):
     """Strict 0/0.5/1 rubric comparison."""
     # create prompt for ai judge to score model answers
     judge_prompt = f"""
@@ -48,12 +49,13 @@ Return JSON only in this format:
 """
     try:
         # call openai api to get judge evaluation
-        resp = client.chat.completions.create(
-            model=model,
-            messages=[{"role": "user", "content": judge_prompt}],
-            temperature=temperature,
+        resp = client.responses.create(
+            model="gpt-5",
+            input=judge_prompt,
+            reasoning={"effort": "low"},
+            text={"verbosity": "low"},
         )
-        out = resp.choices[0].message.content.strip()
+        out = resp.output_text.strip()
         
         # extract json from markdown code block if present
         if out.startswith('```json'):

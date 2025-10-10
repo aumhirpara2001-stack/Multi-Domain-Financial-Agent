@@ -5,7 +5,7 @@ This script evaluates how well AI models answer financial questions by comparing
 ## What it does
 
 1. Loads a dataset
-2. Sends each question to an AI model (in this case an OpenAI model) to get predictions
+2. Sends each question to an AI model (in this case an OpenAI GPT-5 model) to get predictions
 3. Uses another AI model (GPT-5) as a judge to score how well the predictions match the expert answers
 4. Saves results showing accuracy scores and explanations
 
