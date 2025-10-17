@@ -1,58 +1,23 @@
 # Multi-Domain-Financial-Agent
-📈 Results
-🧪 Experiment 1 — Retrieval-Augmented Financial QA
-
-Goal: Build a baseline Financial QA system that retrieves relevant context from 10-K filings and extracts precise answers.
-
-Setup:
-
-Retriever: sentence-transformers/all-MiniLM-L6-v2
-
-Reader: deepset/roberta-base-squad2
-
-Dataset: Financial-QA-10k.csv (7,000 Q/A pairs from NVIDIA 10-K filings)
-
-Key Outcomes:
-
-Successfully built an end-to-end retrieval + QA pipeline.
-
-Achieved strong baseline performance on factual financial questions.
-
-Demonstrated improved semantic retrieval versus keyword-based search.
-
-Model was able to extract precise financial insights such as revenue trends, platform strategies, and capital expenditure patterns.
-
-Quantitative Metrics:
-
-Metric	Value
-Exact Match (EM)	0.162
-F1 Score	0.309
-Coverage	100% (no skipped rows)
-
-🤖 Experiment 2 — LLM-as-a-Judge Evaluation
-
-Goal: Evaluate model-generated financial answers using LLMs as evaluators (instead of lexical metrics).
-
-Setup:
-
-Judge Model: gpt-4o-mini
-
-Compared Models: Mock Mistral and LLaMA outputs
-
-Evaluation Criteria: Correctness, Completeness, Relevance
-
-Output Format: JSON scores (0.0–1.0) returned per question
-
+Result:
+Dataset: https://www.kaggle.com/datasets/yousefsaeedian/financial-q-and-a-10k/data
+Experiment 1 — Retrieval-Augmented Financial Question Answering
+—>In this experiment, I tried to developed a retrieval-augmented QA pipeline to Evaluate how well lightweight transformer models can extract factual answers from long-form financial documents (10-K filings). —>I combined two complementary models:
+  * Retriever: all-MiniLM-L6-v2 (Sentence Transformer) This used to generate dense embeddings for both questions and filing paragraphs, enabling semantic similarity search via FAISS.
+  * Reader: deepset/roberta-base-squad2 This used to extract the most likely answer span from the retrieved top-k paragraphs.
+—>I measured standard QA metrics — Exact Match (EM) and F1 score — using the ground truth answers provided in the dataset.
 Results:
+  * Exact Match (EM): 0.162
+  * F1 Score: 0.309
+  * Observations: The model performed well on direct factual queries (“What year did NVIDIA invent the GPU?”) but struggled with multi-hop reasoning or questions requiring numeric inference. Despite its simplicity, this pipeline established a solid retrieval-based baseline with full interpretability and efficient inference.
 
-Model	Average Judge Score	Comments
-Mistral	0.03	Partial success; a few judged responses returned valid semantic scores.
-LLaMA	NaN	No valid scores (rate-limited during evaluation).
-
-Observations:
-
-Confirmed that LLM-as-a-Judge provides interpretable, human-like scoring.
-
-Validated pipeline integration for future large-scale semantic evaluation once rate limits are lifted.
-
-Established groundwork for automated benchmark generation in financial QA research.
+Experiment 2 — LLM-as-a-Judge Semantic Evaluation
+—>In this experiment, I performed  LLM-as-a-Judge evaluation, an emerging method where a large model is used to assess the semantic correctness of other models’ outputs.
+I used GPT-4o-mini as a semantic evaluator to rate model answers on correctness, completeness, and relevance.
+—>I compared two baseline generative models Mistral and LLaMA — both fine-tuned for text generation but not domain-specific to finance.
+—>Each model generated answers for a subset of 50 financial questions, and GPT-4o-mini scored each output between 0.0 and 1.0 based on how closely it matched the true answer.Before 50 questions I tried with 10 questions but I got nan (incomplete) Judge Score for LLAMA due to rate limits then I tried for more questions after solved API issue but still got rate limits.
+Results:
+  Model	    Average                             Judge Score	Evaluation Method
+  Mistral	  0.033	                              GPT-4o-mini Semantic Scoring
+  LLaMA	    nan (incomplete due to rate limits)	GPT-4o-mini Semantic Scoring
+—>Overall, Mistral’s average semantic score (≈0.03) indicates very low factual consistency, confirming that generic LLMs often fail on specialized financial reasoning without retrieval grounding.LLaMA’s evaluation was partially incomplete due to API rate limits, but preliminary responses showed similar trends.
