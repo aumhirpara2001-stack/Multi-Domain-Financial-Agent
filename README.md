@@ -1,41 +1,3 @@
-# Benchmarking Script
-
-This script evaluates how well AI models answer financial questions by comparing their responses to expert-provided answers (in this case it's specifically the `Financial-QA-10k` set)
-
-## What it does
-
-1. Loads a dataset
-2. Sends each question to an AI model (in this case an OpenAI GPT-5 model, but will adjust to ReAct agentic models for future) to get predictions
-3. Uses another AI model (GPT-5) as a judge to score how well the predictions match the expert answers
-4. Saves results showing accuracy scores and explanations
-
-## Scoring system
-
-- **1.0**: Answer is numerically or semantically exact
-- **0.5**: Method is correct with minor errors (rounding, wording differences)
-- **0.0**: Answer is incorrect
-
-## Files
-
-- `run.py` - Main evaluation script
-- `datasets/Financial-QA-10k.csv` - Question and answer dataset
-- `runs/base_eval_final.csv` - Complete results
-- `runs/base_eval_partial.csv` - Progress checkpoints (saves every 20 questions)
-
-## Setup
-
-1. Set your OpenAI API key: `$env:OPENAI_API_KEY="your-key-here"`
-2. Run: `python run.py`
-
-## Current results
-
-The script is currently set to test 25 questions. Feel free to change this. The line is `df = df.head(25)`. Results show mean accuracy and score distribution across all questions.
-
-## Notes
-- Saves progress periodically in case of interruptions in `runs\base_eval_partial.csv`
-- Judge provides brief explanations for each score
-
----
 # PennyBot
 PennyBot is a CLI-native finance assistant built around Hugging Face’s FinanceBench and FinDER. She combines benchmark analysis with conversational discovery, enabling users to explore datasets, decode financial signals, and stress-test pipelines with audit-grade precision.
 
@@ -64,32 +26,25 @@ A dual‑track guide to the Retrieval‑Augmented Generation (RAG) pipeline —
 
 ---
 
+Got it—here’s the full section, all five parts, with centered “true” formulas styled for GitHub README:
+
+---
+
 ## 📐 Mathematical Foundations
 
 ### 1. Document Chunking
 
-Let `D = {d₁, d₂, ..., dₙ}` be a dataset of documents. Each document `dᵢ` is segmented into smaller textual chunks `cᵢⱼ`, forming a new collection:
+Let \( D = \{d₁, d₂, \dots, dₙ\} \) be a dataset of documents. Each document \( dᵢ \) is segmented into smaller textual chunks \( cᵢⱼ \), forming a new collection:
 
-```
-C = {c₁₁, c₁₂, ..., cₙₘ}
-```
-
-This enables fine-grained embedding and retrieval.
+<p align="center"><strong>C = {c₁₁, c₁₂, ..., cₙₘ}</strong></p>
 
 ---
 
 ### 2. Embedding Function
 
-Each chunk `c ∈ C` is mapped into a high-dimensional vector space via an embedding function `f`:
+Each chunk \( c \in C \) is mapped into a high-dimensional vector space via an embedding function \( f \):
 
-```
-v_c = f(c) ∈ ℝᵈ
-```
-
-The embedding function depends on the provider:
-
-- If using OpenAI: `f = f_OpenAI`
-- If using TogetherAI: `f = f_Together`
+<p align="center"><strong>v<sub>c</sub> = f(c) ∈ ℝᵈ</strong></p>
 
 ---
 
@@ -97,44 +52,33 @@ The embedding function depends on the provider:
 
 All chunk embeddings are stored in a FAISS index:
 
-```
-V = {v_c₁, v_c₂, ..., v_c_k}
-```
+<p align="center"><strong>V = {v<sub>c₁</sub>, v<sub>c₂</sub>, ..., v<sub>cₖ</sub>}</strong></p>
 
-Similarity between a query vector `q` and a chunk vector `v_c` is computed using cosine similarity:
+Similarity between a query vector \( q \) and a chunk vector \( v_c \) is computed using cosine similarity:
 
-```
-sim(q, v_c) = (q ⋅ v_c) / (‖q‖ ⋅ ‖v_c‖)
-```
+<p align="center"><strong>sim(q, v<sub>c</sub>) = (q · v<sub>c</sub>) / (‖q‖ · ‖v<sub>c</sub>‖)</strong></p>
 
 ---
 
 ### 4. Retrieval
 
-Given a user query `q`, we first embed it:
+Given a user query \( q \), we first embed it:
 
-```
-q = f(q)
-```
+<p align="center"><strong>q = f(q)</strong></p>
 
-We then retrieve the top-k most similar chunks:
+We then retrieve the top‑k most similar chunks:
 
-```
-R(q) = arg_topk_{c ∈ C} sim(q, v_c)
-```
+<p align="center"><strong>R(q) = arg<sub>top‑k</sub><sub>c ∈ C</sub> sim(q, v<sub>c</sub>)</strong></p>
 
 ---
 
 ### 5. Augmented Generation
 
-The retrieved chunks `R(q)` are concatenated with the query and passed to the language model:
+The retrieved chunks \( R(q) \) are concatenated with the query and passed to the language model:
 
-```
-Answer(q) = LLM(q ⊕ R(q))
-```
+<p align="center"><strong>Answer(q) = LLM(q ⊕ R(q))</strong></p>
 
-Here, `⊕` denotes the concatenation of the query and its retrieved context.
-
+Here, ⊕ denotes the concatenation of the query and its retrieved context.
 
 ---
 
@@ -230,6 +174,11 @@ while True:
         break
     print(qa.run(q))
 ```
+
+---
+
+ Developed by Garrick Pinon as part of Algoverse AI Researcher Group and also available at: https://github.com/GarrickPinon/PennyBot
+
 
 ---
 
