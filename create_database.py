@@ -1,9 +1,13 @@
 from langchain_community.document_loaders import DirectoryLoader
-from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain.schema import Document
+# from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+# from langchain.schema import Document
 from langchain_openai import OpenAIEmbeddings
-from langchain_community.vectorstores import Chroma
+from langchain_together import TogetherEmbeddings
+# from langchain_community.vectorstores import Chroma
+from langchain_core.documents import Document
 import openai 
+from langchain_chroma import Chroma
 from dotenv import load_dotenv
 import os
 import shutil
@@ -18,6 +22,7 @@ CHROMA_PATH = "chroma"
 # path to directory containing source documents
 DATA_PATH = "data/test_files"
 
+embeddings = TogetherEmbeddings(model="BAAI/bge-base-en-v1.5")
 
 def main():
     # main entry point that orchestrates the data store generation
@@ -62,9 +67,9 @@ def save_to_chroma(chunks: list[Document]):
     if os.path.exists(CHROMA_PATH):
         shutil.rmtree(CHROMA_PATH)
 
-    # create new vector database from chunks using openai embeddings and persist to disk
+    # create new vector database from chunks using TogetherAPI embeddings and persist to disk
     db = Chroma.from_documents(
-        chunks, OpenAIEmbeddings(), persist_directory=CHROMA_PATH
+        chunks, embeddings, persist_directory=CHROMA_PATH
     )
     print(f"Saved {len(chunks)} chunks to {CHROMA_PATH}.")
 
