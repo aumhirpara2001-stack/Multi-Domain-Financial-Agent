@@ -1,24 +1,11 @@
-# Python
-__pycache__/
-*.py[cod]
-*.ipynb_checkpoints
-
-# Environment
 .env
-.env.*
-.venv/
-venv/
-*.env
-
-# Logs and outputs
-*.log
-*.csv
-*.json
-*.parquet
-
-# VSCode
-.vscode/
-
-# OS
 .DS_Store
-Thumbs.db
+.venv
+.pytest_cache
+.ruff_cache
+.vscode
+.idea
+.pytest_cache
+.ruff_cache
+.vscode
+.idea
