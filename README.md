@@ -253,7 +253,7 @@ Example: `2025-11-09_14-30-22_fb_llama31-70b_k5_t0.csv`
 ## Current Performance
 
 **FinanceBench baseline (150 questions):**
-- Average Semantic Similarity: 62.46%
+- Average Semantic Similarity: 53.7%
 - Success Rate: 100%
 - Main issue: Cross-document contamination (retrieves wrong company/year)
 
