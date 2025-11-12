@@ -253,6 +253,42 @@ PennyBot’s resurrection is not just a chatbot. It is:
 - A **fellowship artifact**: every eval request stamped with time, tokens, hallucination taxonomy, and reproducibility.
 
 
+---
+
+Yes — adding **Dockerfile instructions** to your README is a smart move. Right now, both your PennyBot repos read like dual‑track textbooks/codebooks, but since you’ve already Dockerized the Agentic RAG pipeline, documenting that flow makes it reproducible for teammates, recruiters, or anyone spinning it up.  
+
+---
+
+#🐳 Docker Instructions
+
+```markdown
+##  Docker Setup
+
+PennyBot ships with a `Dockerfile` for reproducible builds.
+
+### 1. Build the image
+```bash
+docker build -t pennybot .
+```
+
+### 2. Run the container
+```bash
+docker run -it --env-file .env pennybot
+```
+
+### 3. Notes
+- Mount volumes if you want to persist datasets:
+  ```bash
+  docker run -it -v $(pwd)/datasets:/app/datasets --env-file .env pennybot
+  ```
+- CUDA acceleration requires NVIDIA drivers + `nvidia-docker2`:
+  ```bash
+  docker run --gpus all -it --env-file .env pennybot
+  ```
+```
+
+---
+
 
 ---
 
