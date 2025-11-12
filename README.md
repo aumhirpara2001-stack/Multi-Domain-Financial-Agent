@@ -67,7 +67,7 @@ Here, ⊕ denotes the concatenation of the query and its retrieved context.
 
 
 
-#📐 Prompt Engineering Math
+📐 **Prompt Engineering Math**
 
 
 ### Weighted Context Fusion
