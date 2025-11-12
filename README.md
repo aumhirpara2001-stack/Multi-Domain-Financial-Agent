@@ -65,9 +65,11 @@ The retrieved chunks \( R(q) \) are concatenated with the query and passed to th
 Here, ⊕ denotes the concatenation of the query and its retrieved context.
 
 
+---
 
 
-📐 **Prompt Engineering Math**
+
+# 📐 **Prompt Engineering Math**
 
 
 ## Weighted Context Fusion
