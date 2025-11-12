@@ -9,103 +9,82 @@ Dockerized, CUDA‑accelerated, TTFT tracked, hallucination taxonomy logged, and
 
 ---
 
-📂 Repository Structure
-
-AgenticRAG/
-├── .dockerignore
-├── .env
-├── Dockerfile
-├── requirements.txt
-├── run_all.bat
-├── run_log.txt
-├── all_questions_tagged.csv
-├── financebench_open_source.jsonl
-├── build_index.py          # Vector store construction
-├── chat_cli.py             # Command-line chatbot interface
-├── etl.py                  # Extract-transform-load pipeline
-├── evaluate.py             # Evaluation harness (EM, F1, TTFT, hallucination taxonomy)
-├── generate_corpus.py      # Corpus generation scripts
-├── ingest_and_filter.py    # Ingestion + filtering logic
-├── pinecone_rest.py        # Pinecone API wrapper
-├── rag_agent_library.py    # Core agent orchestration library
-├── seed_from_jsonl.py      # Seed corpus from JSONL
-├── __pycache__/            # Python cache (ignored in .gitignore)
-└── .vscode/                # VS Code settings (ignored in .gitignore)
-
----
-
 📘 Part I. Mathematical Foundations (Textbook Mode)
 
 
-```markdown
-### 1. Document Representation
+---
 
+## 📐 Mathematical Foundations
 
-\[
-D = \{d_1, d_2, \dots, d_n\}
-\]
+### 1. Document Chunking
 
+Let \( D = \{d₁, d₂, \dots, dₙ\} \) be a dataset of documents. Each document \( dᵢ \) is segmented into smaller textual chunks \( cᵢⱼ \), forming a new collection:
 
-Each document \(d_i\) is segmented into smaller textual chunks:
+<p align="center"><strong>C = {c₁₁, c₁₂, ..., cₙₘ}</strong></p>
 
-
-\[
-C = \{c_{11}, c_{12}, \dots, c_{nm}\}
-\]
-
-
+---
 
 ### 2. Embedding Function
 
+Each chunk \( c \in C \) is mapped into a high-dimensional vector space via an embedding function \( f \):
 
-\[
-v_c = f(c) \in \mathbb{R}^d
-\]
+<p align="center"><strong>v<sub>c</sub> = f(c) ∈ ℝᵈ</strong></p>
 
-
+---
 
 ### 3. Vector Store Construction
 
+All chunk embeddings are stored in a FAISS index:
 
-\[
-V = \{v_{c_1}, v_{c_2}, \dots, v_{c_k}\}
-\]
+<p align="center"><strong>V = {v<sub>c₁</sub>, v<sub>c₂</sub>, ..., v<sub>cₖ</sub>}</strong></p>
 
+Similarity between a query vector \( q \) and a chunk vector \( v_c \) is computed using cosine similarity:
 
+<p align="center"><strong>sim(q, v<sub>c</sub>) = (q · v<sub>c</sub>) / (‖q‖ · ‖v<sub>c</sub>‖)</strong></p>
 
-
-\[
-\text{sim}(q, v_c) = \frac{q \cdot v_c}{\|q\| \cdot \|v_c\|}
-\]
-
-
+---
 
 ### 4. Retrieval
 
+Given a user query \( q \), we first embed it:
 
-\[
-q = f(q)
-\]
+<p align="center"><strong>q = f(q)</strong></p>
 
+We then retrieve the top‑k most similar chunks:
 
+<p align="center"><strong>R(q) = arg<sub>top‑k</sub><sub>c ∈ C</sub> sim(q, v<sub>c</sub>)</strong></p>
 
-
-\[
-R(q) = \text{arg top‑k}_{c \in C} \ \text{sim}(q, v_c)
-\]
-
-
+---
 
 ### 5. Augmented Generation
 
+The retrieved chunks \( R(q) \) are concatenated with the query and passed to the language model:
 
-\[
-\text{Answer}(q) = \text{LLM}(q \oplus R(q))
-\]
+<p align="center"><strong>Answer(q) = LLM(q ⊕ R(q))</strong></p>
 
+Here, ⊕ denotes the concatenation of the query and its retrieved context.
 
-Here, \(\oplus\) denotes concatenation of query and retrieved context.
+---
+
+## Part II. Codebook Translation (Developer Manual)
+
+### 1. Environment Setup
+```bash
+pip install langchain==0.3.7 langchain-community==0.3.7 \
+            langchain-openai==0.3.7 langchain-together==0.3.7 \
+            faiss-cpu python-dotenv pandas datasets scikit-learn tqdm PyYAML streamlit
 ```
+
+---
+
+### 2. `.env` File
+```dotenv
+OPENAI_API_KEY=your_openai_key
+TOGETHER_API_KEY=your_together_key
+EMBEDDING_PROVIDER=openai
+```
+
+---
 ---
 
 
@@ -119,7 +98,7 @@ Here, \(\oplus\) denotes concatenation of query and retrieved context.
 
 📐 Prompt Engineering Math
 
-```
+
 ### Weighted Context Fusion
 
 
@@ -178,7 +157,6 @@ H(x) =
 \text{Prompt}(q) = \text{LLM}(q \oplus R(q) \mid \text{Constraints})
 \]
 
-```
 
 ---
 
@@ -207,7 +185,7 @@ Yes — if this README is going to be a **saga**, it needs both the *practical l
 
 ## 💸 End‑to‑End Cost Optimization
 
-```
+
 
 ### 1. Token Cost Function
 
@@ -234,8 +212,6 @@ Yes — if this README is going to be a **saga**, it needs both the *practical l
 \text{Cost}_{\text{total}} = \text{Cost}_{\text{tokens}} + \text{Cost}_{\text{retrieval}} + \text{Energy}_{\text{CUDA}}
 \]
 
-
-```
 
 ---
 
