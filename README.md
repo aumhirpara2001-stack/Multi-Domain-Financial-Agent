@@ -144,7 +144,7 @@ H(x) =
 
 ---
 
-## 🔑 API Keys
+# 🔑 API Keys
 
 To run PennyBot_LLM_Agentic_RAG you’ll need free API keys:
 
@@ -199,7 +199,7 @@ Yes — if this README is going to be a **saga**, it needs both the *practical l
 
 ---
 
-## 📊 Approximations - Subject to Change
+# 📊 Approximations - Subject to Change
 
 - **OpenAI embeddings**: ~$0.10 per 1K queries (high‑fidelity, but pricier).  
 - **Together embeddings**: ~$0.02 per 1K queries (optimized, fellowship‑grade).  
@@ -210,16 +210,16 @@ Yes — if this README is going to be a **saga**, it needs both the *practical l
 ---
 
 
-## 📑 Part II. Codebook Translation (Developer Manual)
+# 📑 Part II. Codebook Translation (Developer Manual)
 
-### Environment Setup
+## Environment Setup
 ```bash
 pip install langchain==0.3.7 langchain-community==0.3.7 \
             langchain-openai==0.3.7 langchain-together==0.3.7 \
             faiss-cpu python-dotenv pandas datasets scikit-learn tqdm PyYAML
 ````
 
-### .env File
+## .env File
 
 ```
 .env
@@ -228,7 +228,7 @@ TOGETHER_API_KEY=your_together_key
 EMBEDDING_PROVIDER=openai
 ```
 
-### Retrieval + Generation
+## Retrieval + Generation
 
 ```
 python
@@ -238,7 +238,7 @@ chunks = [d.page_content for d in docs]
 gen_resp = call_rag_generator(query, chunks)
 ```
 
-### Evaluation Harness
+## Evaluation Harness
 - Logs EM, F1, hallucination type, complexity flag.  
 - Tracks TTFT, total latency, input/output tokens.  
 - Appends results to `results_tagged.csv`.  
@@ -252,14 +252,9 @@ PennyBot’s resurrection is not just a chatbot. It is:
 - A **mathematical textbook** (Part I) and **developer codebook** (Part II).  
 - A **fellowship artifact**: every eval request stamped with time, tokens, hallucination taxonomy, and reproducibility.
 
-
 ---
 
-Yes — adding **Dockerfile instructions** to your README is a smart move. Right now, both your PennyBot repos read like dual‑track textbooks/codebooks, but since you’ve already Dockerized the Agentic RAG pipeline, documenting that flow makes it reproducible for teammates, recruiters, or anyone spinning it up.  
-
----
-
-#🐳 Docker Instructions
+# 🐳 Docker Instructions
 
 ```markdown
 ##  Docker Setup
