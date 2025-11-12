@@ -1,11 +1,39 @@
+# Environment and API keys
 .env
-.DS_Store
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Virtual environments
 .venv
-.pytest_cache
-.ruff_cache
-.vscode
-.idea
-.pytest_cache
-.ruff_cache
-.vscode
-.idea
+venv/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Testing
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Project-specific
+chroma/
+bulk_runs/
+.claude/
+data/test_files/
+
+# Temporary files
+*.log
+*.tmp

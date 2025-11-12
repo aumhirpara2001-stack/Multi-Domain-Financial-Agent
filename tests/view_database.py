@@ -2,17 +2,15 @@
 from langchain_chroma import Chroma
 from langchain_openai import OpenAIEmbeddings
 from dotenv import load_dotenv
-import os
+from pathlib import Path
 
 # load environment variables from .env file
 load_dotenv()
 
-# get the directory where this script is located
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-# get the project root directory (parent of testing_functions)
-PROJECT_ROOT = os.path.dirname(SCRIPT_DIR)
+# get the directory where this script is located and project root
+BASE_DIR = Path(__file__).parent.parent
 # construct absolute path to chroma database directory
-CHROMA_PATH = os.path.join(PROJECT_ROOT, "chroma")
+CHROMA_PATH = str(BASE_DIR / "chroma")
 
 
 def main():
