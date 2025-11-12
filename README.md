@@ -2,7 +2,7 @@
 ---
 
 
-PennyBot_LLM_Agentic_RAG
+#PennyBot_LLM_Agentic_RAG
 
 **PennyBot reborn as an LLM‑Agentic RAG Chatbot**  
 Dockerized, CUDA‑accelerated, TTFT tracked, hallucination taxonomy logged, and orchestrated end‑to‑end with sustainable low‑token, low‑energy retrieval.
@@ -64,39 +64,10 @@ The retrieved chunks \( R(q) \) are concatenated with the query and passed to th
 
 Here, ⊕ denotes the concatenation of the query and its retrieved context.
 
----
-
-## Part II. Codebook Translation (Developer Manual)
-
-### 1. Environment Setup
-```bash
-pip install langchain==0.3.7 langchain-community==0.3.7 \
-            langchain-openai==0.3.7 langchain-together==0.3.7 \
-            faiss-cpu python-dotenv pandas datasets scikit-learn tqdm PyYAML streamlit
-```
-
----
-
-### 2. `.env` File
-```dotenv
-OPENAI_API_KEY=your_openai_key
-TOGETHER_API_KEY=your_together_key
-EMBEDDING_PROVIDER=openai
-```
-
----
----
 
 
-6. Evaluation Metrics
-- **Exact Match (EM)**: binary check if normalized prediction = gold.  
-- **Token F1**: harmonic mean of precision/recall over token overlap.  
-- **TTFT**: time to first token.  
-- **Total Latency**: end‑to‑end wall‑clock time.  
-- **Hallucination Taxonomy**: {grounded, unsupported_numeric, unsupported_claim}.  
 
-
-📐 Prompt Engineering Math
+#📐 Prompt Engineering Math
 
 
 ### Weighted Context Fusion
@@ -156,6 +127,40 @@ H(x) =
 \[
 \text{Prompt}(q) = \text{LLM}(q \oplus R(q) \mid \text{Constraints})
 \]
+
+
+
+
+---
+
+## Part II. Codebook Translation (Developer Manual)
+
+### 1. Environment Setup
+```bash
+pip install langchain==0.3.7 langchain-community==0.3.7 \
+            langchain-openai==0.3.7 langchain-together==0.3.7 \
+            faiss-cpu python-dotenv pandas datasets scikit-learn tqdm PyYAML streamlit
+```
+
+---
+
+### 2. `.env` File
+```dotenv
+OPENAI_API_KEY=your_openai_key
+TOGETHER_API_KEY=your_together_key
+EMBEDDING_PROVIDER=openai
+```
+
+---
+---
+
+
+6. Evaluation Metrics
+- **Exact Match (EM)**: binary check if normalized prediction = gold.  
+- **Token F1**: harmonic mean of precision/recall over token overlap.  
+- **TTFT**: time to first token.  
+- **Total Latency**: end‑to‑end wall‑clock time.  
+- **Hallucination Taxonomy**: {grounded, unsupported_numeric, unsupported_claim}.  
 
 
 ---
