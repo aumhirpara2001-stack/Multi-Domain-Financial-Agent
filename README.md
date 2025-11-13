@@ -1,324 +1,451 @@
+# PennyBot: LLM Agentic RAG
+
+**A production-ready financial question-answering chatbot using Retrieval-Augmented Generation (RAG)**
+
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ---
 
+## 📋 Table of Contents
 
-# PennyBot_LLM_Agentic_RAG
-
-**PennyBot reborn as an LLM‑Agentic RAG Chatbot**  
-Dockerized, CUDA‑accelerated, TTFT tracked, hallucination taxonomy logged, and orchestrated end‑to‑end with sustainable low‑token, low‑energy retrieval.
-
----
-
-# 📘 Part I. Mathematical Foundations (Textbook Mode)
-
-
----
-
-# 📐 Mathematical Foundations
-
-## 1. Document Chunking
-
-Let \( D = \{d₁, d₂, \dots, dₙ\} \) be a dataset of documents. Each document \( dᵢ \) is segmented into smaller textual chunks \( cᵢⱼ \), forming a new collection:
-
-<p align="center"><strong>C = {c₁₁, c₁₂, ..., cₙₘ}</strong></p>
+- [Overview](#overview)
+- [Features](#features)
+- [Project Structure](#project-structure)
+- [Quick Start](#quick-start)
+- [Mathematical Foundations](#mathematical-foundations)
+- [Cost Analysis](#cost-analysis)
+- [Evaluation Metrics](#evaluation-metrics)
+- [Docker Deployment](#docker-deployment)
+- [Usage Examples](#usage-examples)
+- [References](#references)
 
 ---
 
-## 2. Embedding Function
+## Overview
 
-Each chunk \( c \in C \) is mapped into a high-dimensional vector space via an embedding function \( f \):
+PennyBot is an **LLM-powered Agentic RAG system** designed for financial question-answering. It combines:
 
-<p align="center"><strong>v<sub>c</sub> = f(c) ∈ ℝᵈ</strong></p>
+- **Dense Vector Retrieval** using Pinecone and FAISS
+- **Together AI** for cost-efficient embeddings and LLM inference
+- **LangChain LCEL** for orchestration and conversational context
+- **Hallucination Detection** with taxonomy logging
+- **TTFT & Latency Tracking** for performance monitoring
 
----
+### Key Capabilities
 
-## 3. Vector Store Construction
-
-All chunk embeddings are stored in a FAISS index:
-
-<p align="center"><strong>V = {v<sub>c₁</sub>, v<sub>c₂</sub>, ..., v<sub>cₖ</sub>}</strong></p>
-
-Similarity between a query vector \( q \) and a chunk vector \( v_c \) is computed using cosine similarity:
-
-<p align="center"><strong>sim(q, v<sub>c</sub>) = (q · v<sub>c</sub>) / (‖q‖ · ‖v<sub>c</sub>‖)</strong></p>
-
----
-
-## 4. Retrieval
-
-Given a user query \( q \), we first embed it:
-
-<p align="center"><strong>q = f(q)</strong></p>
-
-We then retrieve the top‑k most similar chunks:
-
-<p align="center"><strong>R(q) = arg<sub>top‑k</sub><sub>c ∈ C</sub> sim(q, v<sub>c</sub>)</strong></p>
+- Answers questions on corporate finance, accounting, quantitative finance, and portfolio theory
+- Retrieves relevant context from a vector database of 10,000+ financial Q&A pairs
+- Cites sources with metadata for transparency
+- Maintains conversational context across multi-turn interactions
+- Tracks performance metrics (EM, F1, TTFT, hallucination rate)
 
 ---
 
-## 5. Augmented Generation
+## Features
 
-The retrieved chunks \( R(q) \) are concatenated with the query and passed to the language model:
-
-<p align="center"><strong>Answer(q) = LLM(q ⊕ R(q))</strong></p>
-
-Here, ⊕ denotes the concatenation of the query and its retrieved context.
-
+✅ **Agentic RAG Pipeline** - Contextualizes queries, retrieves relevant documents, generates grounded answers
+✅ **Conversational Memory** - Maintains chat history and resolves vague references
+✅ **Citation Tracking** - Returns source metadata with every response
+✅ **Dockerized Deployment** - Reproducible builds with GPU support
+✅ **Evaluation Harness** - Automated benchmarking with EM, F1, and hallucination detection
+✅ **Cost Optimized** - ~$0.05/query using Together AI and Pinecone serverless
 
 ---
 
+## Project Structure
 
+```
+PennyBot_LLM_Agentic_RAG/
+├── src/                          # Source code
+│   ├── __init__.py
+│   ├── rag_agent_library.py      # Core RAG orchestration (LCEL)
+│   ├── chat_cli.py               # Interactive CLI interface
+│   └── utils/
+│       ├── __init__.py
+│       └── etl.py                # Data cleaning & preprocessing
+├── scripts/                      # Utility scripts
+│   ├── ingest_and_filter.py      # Load and clean CSV data
+│   ├── build_index.py            # Populate Pinecone index
+│   ├── generate_corpus.py        # Synthetic data generation
+│   └── evaluate.py               # Evaluation harness
+├── data/                         # Data directory
+│   ├── raw/                      # Raw datasets
+│   │   ├── all_questions_tagged.csv
+│   │   └── financebench_open_source.jsonl
+│   └── processed/                # Cleaned data outputs
+├── config/                       # Configuration
+│   └── .env.example              # Environment template
+├── docs/                         # Documentation
+├── tests/                        # Unit tests (future)
+├── .gitignore
+├── .dockerignore
+├── Dockerfile
+├── docker-compose.yml            # Multi-service orchestration
+├── requirements.txt              # Python dependencies
+├── LICENSE
+└── README.md
+```
 
-# 📐 **Prompt Engineering Math**
+---
 
+## Quick Start
 
-## Weighted Context Fusion
+### 1. Prerequisites
 
+- Python 3.10+
+- API keys from:
+  - [Together AI](https://api.together.xyz/) (for embeddings & LLM)
+  - [Pinecone](https://www.pinecone.io/) (for vector database)
 
-\[
-P(q) = q \oplus \sum_{i=1}^k \alpha_i \cdot c_i
-\]
+### 2. Installation
 
+```bash
+# Clone the repository
+git clone https://github.com/yourusername/PennyBot_LLM_Agentic_RAG.git
+cd PennyBot_LLM_Agentic_RAG
 
-- \(q\) = query  
-- \(c_i\) = retrieved chunk  
-- \(\alpha_i\) = weight coefficient (similarity, token budget, energy cost)
+# Create virtual environment
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
 
-### Token + Energy Cost Function
+# Install dependencies
+pip install --upgrade pip
+pip install -r requirements.txt
+```
 
+### 3. Configuration
 
-\[
-\text{Cost}(R) = \lambda \cdot \text{Tokens}(R) + \mu \cdot \text{Energy}(R)
-\]
+```bash
+# Copy environment template
+cp config/.env.example .env
 
+# Edit .env with your API keys
+TOGETHER_API_KEY=your_together_key_here
+PINECONE_API_KEY=your_pinecone_key_here
+```
 
+### 4. Build Vector Index
 
-### TTFT Metric
+```bash
+# Process raw data
+python scripts/ingest_and_filter.py
 
+# Build Pinecone index (one-time setup)
+python scripts/build_index.py
+```
 
-\[
-\text{TTFT} = t_{\text{first}} - t_{\text{request}}
-\]
+### 5. Run the Chatbot
 
+```bash
+# Launch interactive CLI
+python src/chat_cli.py
+```
 
+### 6. Run Evaluation
 
+```bash
+# Evaluate on benchmark dataset
+python scripts/evaluate.py --dataset data/raw/all_questions_tagged.csv --limit 100
 
-\[
-\text{Latency} = t_{\text{last}} - t_{\text{request}}
-\]
+# Full evaluation (no limit)
+python scripts/evaluate.py
+```
 
+---
 
+## Mathematical Foundations
+
+### Document Chunking
+
+Let D = {d₁, d₂, ..., dₙ} be a dataset of documents. Each document dᵢ is segmented into smaller chunks cᵢⱼ:
+
+**C = {c₁₁, c₁₂, ..., cₙₘ}**
+
+### Embedding Function
+
+Each chunk c ∈ C is mapped to a high-dimensional vector space:
+
+**vᴄ = f(c) ∈ ℝᵈ**
+
+Where f is the embedding model (BAAI/bge-base-en-v1.5, d=768).
+
+### Similarity Search
+
+Cosine similarity between query q and chunk vᴄ:
+
+**sim(q, vᴄ) = (q · vᴄ) / (‖q‖ · ‖vᴄ‖)**
+
+### Retrieval
+
+Retrieve top-k most similar chunks:
+
+**R(q) = arg topₖ sim(q, vᴄ) for c ∈ C**
+
+### Augmented Generation
+
+Concatenate retrieved context with query and pass to LLM:
+
+**Answer(q) = LLM(q ⊕ R(q))**
+
+Where ⊕ denotes concatenation.
+
+### Weighted Context Fusion
+
+**P(q) = q ⊕ Σᵢ₌₁ᵏ αᵢ · cᵢ**
+
+Where αᵢ are weights based on similarity scores.
+
+### Time to First Token (TTFT)
+
+**TTFT = t_first - t_request**
+
+**Total Latency = t_last - t_request**
 
 ### Hallucination Taxonomy
 
-
-\[
-H(x) =
-\begin{cases}
-0 & \text{grounded in retrieved context} \\
-1 & \text{unsupported numeric claim} \\
-2 & \text{unsupported textual claim}
-\end{cases}
-\]
-
-
-
-### Constraint‑Driven Prompt
-
-
-\[
-\text{Prompt}(q) = \text{LLM}(q \oplus R(q) \mid \text{Constraints})
-\]
-
-
----
-
-
-6. Evaluation Metrics
-- **Exact Match (EM)**: binary check if normalized prediction = gold.  
-- **Token F1**: harmonic mean of precision/recall over token overlap.  
-- **TTFT**: time to first token.  
-- **Total Latency**: end‑to‑end wall‑clock time.  
-- **Hallucination Taxonomy**: {grounded, unsupported_numeric, unsupported_claim}.  
-
-
----
-
-# 🔑 API Keys
-
-To run PennyBot_LLM_Agentic_RAG you’ll need free API keys:
-
-- [Together AI](https://api.together.xyz/) → for cost‑efficient embeddings and hosted inference
-- [Pinecone](https://www.pinecone.io/) → for scalable vector database
-- (Optional) Hugging Face Hub → for dataset pulls and model hosting
-
-Add them to your `.env` file:
-
-TOGETHER_API_KEY=your_together_key  
-PINECONE_API_KEY=your_pinecone_key
-
----
-
-Cost-Benefit Analysis
-
-Yes — if this README is going to be a **saga**, it needs both the *practical links* (where to grab free API keys) and the *numerical testimony* (your end‑to‑end cost slicing). Right now it reads like a textbook, but you want it to feel like a fellowship epic: math, code, lore, and economics all braided together.
-
-
----
-
-
-## 💸 End‑to‑End Cost Optimization
-
-
-
-### 1. Token Cost Function
-
-
-\[
-\text{Cost}_{\text{tokens}} = \lambda \cdot \text{InputTokens} + \mu \cdot \text{OutputTokens}
-\]
-
-
-
-### 2. Retrieval Cost Function
-
-
-\[
-\text{Cost}_{\text{retrieval}} = \alpha \cdot k + \beta \cdot \text{Latency}
-\]
-
-
-
-### 3. Total Pipeline Cost
-
-
-\[
-\text{Cost}_{\text{total}} = \text{Cost}_{\text{tokens}} + \text{Cost}_{\text{retrieval}} + \text{Energy}_{\text{CUDA}}
-\]
-
-
----
-
-# 📊 Approximations - Subject to Change
-
-- **OpenAI embeddings**: ~$0.10 per 1K queries (high‑fidelity, but pricier).  
-- **Together embeddings**: ~$0.02 per 1K queries (optimized, fellowship‑grade).  
-- **Pinecone storage**: ~$0.25 per GB/month (scales with corpus size).  
-- **CUDA acceleration**: negligible marginal cost once GPU is provisioned.  
-- **End‑to‑end pipeline**: you benchmarked ~84.5% accuracy with **100% coverage** at **< $0.05/query**.
-
----
-
-
-# 📑 Part II. Codebook Translation (Developer Manual)
-
-## Environment Setup
-```bash
-pip install langchain==0.3.7 langchain-community==0.3.7 \
-            langchain-openai==0.3.7 langchain-together==0.3.7 \
-            faiss-cpu python-dotenv pandas datasets scikit-learn tqdm PyYAML
-````
-
-## .env File
-
 ```
-.env
-
-TOGETHER_API_KEY=your_together_key
-EMBEDDING_PROVIDER=openai
+H(x) = {
+  0: grounded in retrieved context
+  1: unsupported numeric claim
+  2: unsupported textual claim
+}
 ```
 
-## Retrieval + Generation
+---
 
-```
-python
-retriever = get_retriever(index_path)
-docs = retriever.retrieve(query, top_k=5)
-chunks = [d.page_content for d in docs]
-gen_resp = call_rag_generator(query, chunks)
-```
+## Cost Analysis
 
-## Evaluation Harness
-- Logs EM, F1, hallucination type, complexity flag.  
-- Tracks TTFT, total latency, input/output tokens.  
-- Appends results to `results_tagged.csv`.  
-- Prints summary averages for fellowship‑grade reproducibility.
+### Token Cost Function
+
+**Cost_tokens = λ · InputTokens + μ · OutputTokens**
+
+Where λ and μ are provider-specific rates.
+
+### Retrieval Cost Function
+
+**Cost_retrieval = α · k + β · Latency**
+
+Where k is the number of retrieved chunks.
+
+### Total Pipeline Cost
+
+**Cost_total = Cost_tokens + Cost_retrieval + Energy_CUDA**
+
+### Cost Estimates (Approximate)
+
+| Component | Cost per 1K Queries |
+|-----------|---------------------|
+| Together AI Embeddings | ~$0.02 |
+| Together AI LLM (Llama-3-70B) | ~$0.30 |
+| Pinecone Storage | ~$0.25/GB/month |
+| **End-to-End Pipeline** | **~$0.05/query** |
+
+*Target: 84.5% accuracy, 100% coverage*
 
 ---
 
-## ✅ Summary
-PennyBot’s resurrection is not just a chatbot. It is:
-- A **CUDA‑powered, Docker‑hardened RAG pipeline**.  
-- A **mathematical textbook** (Part I) and **developer codebook** (Part II).  
-- A **fellowship artifact**: every eval request stamped with time, tokens, hallucination taxonomy, and reproducibility.
+## Evaluation Metrics
+
+The evaluation harness (`scripts/evaluate.py`) computes:
+
+1. **Exact Match (EM)** - Binary check if normalized prediction equals ground truth
+2. **Token F1** - Harmonic mean of precision/recall over token overlap
+3. **TTFT** - Time to first token (ms)
+4. **Total Latency** - End-to-end response time (ms)
+5. **Hallucination Rate** - % grounded vs. unsupported claims
+6. **Token Usage** - Input/output token counts
+
+Results are saved to `results_tagged.csv` with per-question details.
+
+### Sample Output
+
+```
+============================================================
+EVALUATION SUMMARY
+============================================================
+Exact Match:            72.45%
+Token F1:               84.50%
+Avg Total Latency:      1,234.5 ms
+Avg TTFT:               123.4 ms
+Grounded Responses:     87.3%
+Unsupported Numeric:    8.2%
+Unsupported Claims:     4.5%
+Avg Docs Retrieved:     3.0
+============================================================
+```
 
 ---
 
-# 🐳 Docker Instructions
+## Docker Deployment
 
-```markdown
-##  Docker Setup
+### Build Docker Image
 
-PennyBot ships with a `Dockerfile` for reproducible builds.
-
-### 1. Build the image
 ```bash
 docker build -t pennybot .
 ```
 
-### 2. Run the container
+### Run with Docker
+
 ```bash
+# Basic run (evaluation mode)
 docker run -it --env-file .env pennybot
+
+# Interactive chat mode
+docker run -it --env-file .env pennybot python src/chat_cli.py
+
+# Mount volumes for data persistence
+docker run -it -v $(pwd)/data:/app/data --env-file .env pennybot
+
+# GPU acceleration (requires nvidia-docker2)
+docker run --gpus all -it --env-file .env pennybot
 ```
 
-### 3. Notes
-- Mount volumes if you want to persist datasets:
-  ```bash
-  docker run -it -v $(pwd)/datasets:/app/datasets --env-file .env pennybot
-  ```
-- CUDA acceleration requires NVIDIA drivers + `nvidia-docker2`:
-  ```bash
-  docker run --gpus all -it --env-file .env pennybot
-  ```
+### Docker Compose (Multi-Service)
 
+```bash
+# Coming soon: Redis caching + Prometheus monitoring
+docker-compose up
+```
 
 ---
 
-# 📚 References
+## Usage Examples
 
-## Core Frameworks
-- **VeritasFi (2025)** — Hybrid retrieval + reranking for financial QA.  
-  *Informed PennyBot’s hybrid retriever design (CAKC, reranker practices).*
+### Interactive Chat
 
-- **Multi‑HyDE (2025)** — Hypothetical document embeddings.  
-  *Inspired multi‑hop reasoning, query diversification, and recall curve tracking.*
+```
+You: What is Return on Equity (ROE)?
 
-- **FinSage (2025)** — Multi‑modal retrieval, hallucination reduction.  
-  *Guided hallucination taxonomy, DPO reranker, and compliance‑critical retrieval.*
+AI: Thinking...
 
-- **Financial Report Chunking for Effective RAG (2024)** — Element‑based chunking.  
-  *Anchored PennyBot’s element‑aware chunking and metadata logging.*
+AI: Return on Equity (ROE) is calculated as:
 
-- **FinQANet (2022)** — Program‑of‑thought reasoning.  
-  *Influenced step‑by‑step reasoning and interpretable outputs.*
+ROE = Net Income ÷ Shareholder's Equity
+
+It measures a company's profitability relative to equity invested.
+Higher ROE indicates more efficient use of shareholder capital.
+
+--- Citations ---
+Source: synthetic_finance_council, ID: synthetic_00001
+-----------------
+
+You: How is it different from ROA?
+
+AI: Thinking...
+
+AI: ROE (Return on Equity) measures profitability relative to shareholder
+equity, while ROA (Return on Assets) measures profitability relative to
+total assets. Key differences:
+
+• ROE = Net Income / Equity
+• ROA = Net Income / Total Assets
+• ROE reflects leverage; ROA does not
+
+A company with high debt will have higher ROE than ROA.
+
+--- Citations ---
+Source: synthetic_finance_council, ID: synthetic_00023
+-----------------
+```
+
+### Programmatic Usage
+
+```python
+from src.rag_agent_library import (
+    get_pinecone_vectorstore,
+    create_rag_pipeline
+)
+from langchain_together import ChatTogether, TogetherEmbeddings
+
+# Initialize
+llm = ChatTogether(model="meta-llama/Llama-3-70b-chat-hf", temperature=0.1)
+embeddings = TogetherEmbeddings(model="BAAI/bge-base-en-v1.5")
+
+# Get vector store
+vectorstore = get_pinecone_vectorstore(embeddings)
+retriever = vectorstore.as_retriever(search_kwargs={'k': 3})
+
+# Create RAG agent
+rag_agent = create_rag_pipeline(retriever, llm)
+
+# Query
+response = rag_agent.invoke({
+    "question": "How is WACC calculated?",
+    "chat_history": []
+})
+
+print(response['answer'])
+print(f"Retrieved {len(response['retrieved_docs'])} documents")
+```
 
 ---
 
-## Baselines
-- **LightRAG (2022)** — Dense retrieval baseline.  
-- **GraphRAG (2022)** — Graph‑structured retrieval baseline.  
-- **BM25 (2009)** — Sparse retrieval baseline.  
-- **FAISS (2017)** — Dense retrieval baseline.  
-- **BM25 + FAISS (2019)** — Hybrid sparse‑dense baseline.  
+## References
 
-*These baselines contextualize PennyBot’s resurrection: moving beyond dense/sparse hybrids into agentic orchestration.*
+### Core Frameworks
+
+- **VeritasFi (2025)** - Hybrid retrieval + reranking for financial QA
+- **Multi-HyDE (2025)** - Hypothetical document embeddings for multi-hop reasoning
+- **FinSage (2025)** - Multi-modal retrieval with hallucination reduction
+- **Financial Report Chunking (2024)** - Element-based chunking for financial docs
+- **FinQANet (2022)** - Program-of-thought reasoning for financial questions
+
+### Baselines
+
+- **LightRAG** - Dense retrieval baseline
+- **GraphRAG** - Graph-structured retrieval
+- **BM25** - Sparse keyword retrieval
+- **FAISS** - Facebook AI Similarity Search
+- **Hybrid (BM25 + FAISS)** - Combined sparse-dense retrieval
+
+### Statistical Methods
+
+- **Efron & Tibshirani (1993)** - Bootstrap confidence intervals
+- **Wilcoxon (1945)** - Signed-rank test for paired comparisons
 
 ---
 
-## Statistical Methods
-- **Efron & Tibshirani (1993)** — Bootstrap confidence intervals.  
-  *Used for reproducible paired comparisons.*  
+## Contributing
 
-- **Wilcoxon (1945)** — Signed‑rank test.  
-  *Applied for nonparametric paired EM/F1 comparisons.*
-  
+Contributions are welcome! Please open an issue or submit a pull request.
+
+### Development Setup
+
+```bash
+# Install dev dependencies
+pip install -r requirements-dev.txt
+
+# Run tests
+pytest tests/
+
+# Format code
+black src/ scripts/
+
+# Lint
+flake8 src/ scripts/
+```
+
+---
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+## Acknowledgments
+
+Built with:
+- [LangChain](https://python.langchain.com/) - RAG orchestration
+- [Pinecone](https://www.pinecone.io/) - Vector database
+- [Together AI](https://www.together.ai/) - LLM inference & embeddings
+- [FAISS](https://github.com/facebookresearch/faiss) - Similarity search
+
+---
+
+## Contact
+
+For questions or feedback, please open an issue on GitHub.
+
+**PennyBot** - Making financial knowledge accessible through AI 🤖📊

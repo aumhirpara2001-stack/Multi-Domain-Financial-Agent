@@ -132,7 +132,7 @@ Do NOT answer the question. Just return the reformulated version.
 """
 
 # --- 1.2: Configuration ---
-CSV_FILE_PATH = "all_questions_tagged.csv"
+CSV_FILE_PATH = "data/raw/all_questions_tagged.csv"
 
 EMBEDDING_MODEL_NAME = os.environ.get(
     "EMBEDDING_MODEL_NAME",
@@ -266,78 +266,6 @@ def get_pinecone_vectorstore(
         return None
 
 
-
-# --- Section 3: RAG Agent Orchestration (LCEL) ---
-# ==================================================
-
-def _format_chat_history(chat_history: List[Tuple[str, str]]) -> List[BaseMessage]:
-    """
-    Helper function to convert (human, ai) tuples to BaseMessage objects.
-    """
-    buffer = []
-    for human, ai in chat_history:
-        buffer.append(HumanMessage(content=human))
-        buffer.append(AIMessage(content=ai))
-    return buffer
-
-def _format_docs_with_citations(docs: List[Document]) -> str:
-    """
-    Helper function to "pretty print" retrieved documents with metadata.
-    """
-    formatted_docs = []
-    for i, doc in enumerate(docs):
-        citation_info = (
-            f"Source: {doc.metadata.get('source_dataset', 'N/A')} "
-            f"(Tag: {doc.metadata.get('primary_tag', 'N/A')}, "
-            f"ID: {doc.metadata.get('id', 'N/A')})"
-        )
-        formatted_doc = (
-            f"[Retrieved Document {i+1} - {citation_info}]\n"
-            f"{doc.page_content}\n"
-            f"[End of Document {i+1}]"
-        )
-        formatted_docs.append(formatted_doc)
-
-    if not formatted_docs:
-        return "No relevant documents were found."
-
-    return "\n\n" + "\n\n".join(formatted_docs)
-
-def create_rag_pipeline(
-    retriever: BaseRetriever,
-    llm: BaseChatModel
-) -> Runnable:
-    """
-    Creates the complete, stable LCEL-based Conversational RAG pipeline.
-    """
-
-    # --- 1. Contextualizer Chain ---
-    contextualizer_prompt = ChatPromptTemplate.from_messages([
-        ("system", CONTEXTUALIZE_SYSTEM_PROMPT),
-        MessagesPlaceholder(variable_name="chat_history"),
-        ("human", "{question}"),
-    ])
-
-    contextualizer_chain = (
-        contextualizer_prompt
-        | llm
-        | StrOutputParser()
-    )
-
-    # --- 2. Main RAG Chain ---
-    rag_prompt = ChatPromptTemplate.from_messages([
-        ("system", RAG_SYSTEM_PROMPT),
-        ("human", "Question: {question}\n\nContext: {context}\n\nAnswer:"),
-    ])
-
-    rag_chain = (
-        RunnablePassthrough.assign(
-            context=(lambda x: x["context"]) | RunnableLambda(_format_docs_with_citations)
-        )
-        | rag_prompt
-        | llm
-        | StrOutputParser()
-    )
 
 # --- Section 3: RAG Agent Orchestration (LCEL) ---
 # ==================================================

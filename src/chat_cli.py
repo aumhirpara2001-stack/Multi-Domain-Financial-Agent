@@ -11,10 +11,14 @@ interactive chat in the CLI.
 """
 
 import sys
+from pathlib import Path
 from typing import List, Tuple
 
+# Add parent directory to path for imports
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
 # Import the core components from our "brain" library
-from rag_agent_library import (
+from src.rag_agent_library import (
     get_pinecone_vectorstore,
     create_rag_pipeline,
     LLM_MODEL_NAME,

@@ -1,5 +1,11 @@
+import sys
+from pathlib import Path
+
+# Add parent directory to path for imports
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
 import pandas as pd
-from etl import etl_auto
+from src.utils.etl import etl_auto
 from langchain_core.documents import Document
 
 RAW_PATH = "./data/raw/all_questions_tagged.csv"

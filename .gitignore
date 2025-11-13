@@ -33,3 +33,17 @@ dist/
 # Cache
 *.cache
 .cache/
+
+# Data files (don't commit large datasets)
+data/processed/*.csv
+results_*.csv
+
+# IDE
+.idea/
+*.swp
+*.swo
+
+# Test outputs
+tests/__pycache__/
+.pytest_cache/
+.coverage
