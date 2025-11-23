@@ -29,6 +29,7 @@ from evaluation.metrics import (
     calculate_aggregate_metrics,
     format_metrics_summary
 )
+from evaluation.llm_judge import llm_as_judge
 
 # Load environment variables
 load_dotenv()
@@ -54,6 +55,10 @@ class BulkTestConfig:
     # Generation settings
     temperature: float = 0.0
     max_tokens: int = 512
+
+    # Evaluation settings
+    use_llm_judge: bool = False
+    judge_model: str = "meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo"
 
     # Paths
     chroma_path: str = "chroma"
@@ -407,6 +412,17 @@ Answer:""",
                 else:
                     sem_sim = 0.0
 
+                # Calculate LLM judge score if enabled
+                judge_score = None
+                judge_justification = None
+                if self.config.use_llm_judge and result['predicted_answer'] is not None:
+                    judge_score, judge_justification = llm_as_judge(
+                        question=question,
+                        gold_answer=gold_answer,
+                        predicted_answer=result['predicted_answer'],
+                        judge_model=self.config.judge_model
+                    )
+
                 # Format sources for CSV
                 sources_str = None
                 if result['sources']:
@@ -427,6 +443,11 @@ Answer:""",
                     'sources': sources_str,
                     'error': result['error']
                 }
+
+                # Add LLM judge scores if enabled
+                if self.config.use_llm_judge:
+                    result_row['judge_score'] = judge_score
+                    result_row['judge_justification'] = judge_justification
 
                 # Add question type if available
                 if question_type_col and question_type_col in row:
@@ -560,6 +581,17 @@ def main():
         default=None,
         help='Path to subset questions CSV (optional, filters to subset of questions)'
     )
+    parser.add_argument(
+        '--use-llm-judge',
+        action='store_true',
+        help='Enable LLM-as-a-Judge evaluation (slower but more accurate)'
+    )
+    parser.add_argument(
+        '--judge-model',
+        type=str,
+        default='meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo',
+        help='Model to use for LLM judge evaluation'
+    )
 
     args = parser.parse_args()
 
@@ -569,7 +601,9 @@ def main():
         model_name=args.model,
         top_k_retrieval=args.top_k,
         temperature=args.temperature,
-        max_tokens=args.max_tokens
+        max_tokens=args.max_tokens,
+        use_llm_judge=args.use_llm_judge,
+        judge_model=args.judge_model
     )
 
     # Select dataset adapter
